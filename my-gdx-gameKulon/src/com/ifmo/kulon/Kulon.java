@@ -36,7 +36,7 @@ public class Kulon implements ApplicationListener {
         renderer = new ShapeRenderer();
 
         List<Point> points = new ArrayList<Point>();
-        points.add(new Point(100, 100,0, 50));
+        points.add(new Point(10, 100,50, 500));
        /* points.add(new Point(100, 100, 0.1, -0.1));
         points.add(new Point(70, 70, 0, -0.1));
         points.add(new Point(90, 70, 0, -0.1));
@@ -66,7 +66,7 @@ public class Kulon implements ApplicationListener {
         renderer.circle(100, 100, 100);
         renderer.setColor(255, 0, 0, 0);
         for (Point point : model.getOldState()) {
-            renderer.circle((float) point.getX(), (float) point.getY(), 1);
+            renderer.circle((float) point.getX(), (float) point.getY(), 5);
             //System.out.println(point.getX() + "  " + point.getY());
         }
 

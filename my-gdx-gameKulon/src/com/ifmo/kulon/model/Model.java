@@ -33,11 +33,7 @@ public class Model {
     }
 
 
-    /*private Vector2 getReflectedVelocity(Vector2 velocity, float a) {
-        float x = 2*(a*velocity.y+velocity.x)/(1+a*a) - velocity.x;
-        float y = 2*a*x - velocity.y;
-        return new Vector2(x,y);
-    }*/
+
 
     public void render(double timeFrame) {
         for (int i = 0; i < oldState.size(); ++i) {
@@ -45,7 +41,7 @@ public class Model {
             Point newPoint = newState.get(i);
             newPoint.setFields(oldPoint);
             Vector acceleration = countAcceleration(newPoint, oldPoint, oldState);
-           // System.out.println("i=" + i + "  " + acceleration);
+            // System.out.println("i=" + i + "  " + acceleration);
             // Vector acceleration = new Vector(0,0);
             Vector velocity = countVelocity(oldPoint, acceleration, timeFrame);
             Vector moving = countMoving(oldPoint, acceleration, timeFrame);
@@ -60,7 +56,7 @@ public class Model {
         double j = (newPoint.getY() - circleCenter.getY());
         double r = circleRadius;
         double r2 = r * r;
-        if (i * i + j * j >r2) {
+        if (i * i + j * j > r2) {
             double x1 = oldPoint.getX();
             double y1 = oldPoint.getY();
             double x2 = newPoint.getX();
@@ -69,12 +65,10 @@ public class Model {
             double cx = circleCenter.getX();
             double cy = circleCenter.getY();
 
-            double a = (y1-y2) / (x1-x2);
-            if (Double.isInfinite(a)){
-                System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");//todo
-            }
-            double b = (x1*y2 - x2*y1)
-                    / (x1-x2);
+            double a = (y1 - y2) / (x1 - x2);
+
+            double b = (x1 * y2 - x2 * y1)
+                    / (x1 - x2);
 
 
             double a2 = a * a;
@@ -89,6 +83,14 @@ public class Model {
             double ry1 = a * rx1 + b;
             double ry2 = a * rx2 + b;
 
+
+            if (Double.isInfinite(a)) {
+                rx1 = x1;
+                rx2 = x2;
+                ry1 = Math.sqrt(r2 - (rx1 - cx) * (rx1 - cx)) + cy;
+                ry2 = -Math.sqrt(r2 - (rx1 - cx) * (rx1 - cx)) + cy;
+            }
+
             double distance1 = new Vector(rx1 - x2, ry1 - y2).countModule();
             double distance2 = new Vector(rx2 - x2, ry2 - y2).countModule();
 
@@ -100,9 +102,27 @@ public class Model {
                 rPoint = new Vector(rx2, ry2);
             }
 
+            double vReflectedX = rPoint.getX() - newPoint.getvX() - cx;
+            double vReflectedY = rPoint.getY() - newPoint.getvY() - cy;
 
-            System.out.println(rPoint);
+            double vA = (cy - vReflectedY) / (cx - vReflectedX);
+            Vector reflectedPoint = getReflectedVelocity(new Vector(vReflectedX, vReflectedY),a);
+
+            double vx = reflectedPoint.getX() - rPoint.getX() - cx;
+            double vy = reflectedPoint.getY() - rPoint.getY() - cy;
+            Vector newVelocity = new Vector(vx, vy);
+
+            newPoint.setvX(vx);
+            newPoint.setvY(vy);
+            newPoint.setX(rPoint.getX());
+            newPoint.setY(rPoint.getY());
         }
+    }
+
+     private Vector getReflectedVelocity(Vector velocity, double a) {
+        double x = 2*(a*velocity.getY()+velocity.getX())/(1+a*a) - velocity.getX();
+        double y = 2*a*x - velocity.getX();
+        return new Vector(x,y);
     }
 
     private void setParam(Point newPoint, Vector velocity, Vector moving) {

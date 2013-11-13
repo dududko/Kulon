@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.ifmo.kulon.model.Model;
 import com.ifmo.kulon.model.Point;
+import com.ifmo.kulon.model.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,10 +36,13 @@ public class Kulon implements ApplicationListener {
         renderer = new ShapeRenderer();
 
         List<Point> points = new ArrayList<Point>();
-        points.add(new Point(80, 80, 10, 10));
-        points.add(new Point(100, 100, 0.1, -0.1));
+        points.add(new Point(100, 100,0, 50));
+       /* points.add(new Point(100, 100, 0.1, -0.1));
+        points.add(new Point(70, 70, 0, -0.1));
+        points.add(new Point(90, 70, 0, -0.1));
+        points.add(new Point(70, 90, 10, 0));*/
 
-        model = new Model(points);
+        model = new Model(points,new Vector(100,100),100);
     }
 
     @Override

@@ -16,20 +16,20 @@ public class Model {
 
     List<Point> newState;
 
-    private double kFriction =DEFAULT_K_FRICTION;
+    private double kFriction = DEFAULT_K_FRICTION;
+
+    Vector circleCenter;
+    double circleRadius;
 
 
-    public Model() {
-        this.oldState = new ArrayList<Point>();
-        this.newState = new ArrayList<Point>();
-    }
-
-    public Model(List<Point> curState) {
+    public Model(List<Point> curState, Vector circleCenter, double circleRadius) {
         this.oldState = curState;
         this.newState = new ArrayList<Point>();
         for (Point point : curState) {
             newState.add(new Point(point));
         }
+        this.circleCenter = circleCenter;
+        this.circleRadius = circleRadius;
     }
 
 
@@ -39,26 +39,70 @@ public class Model {
         return new Vector2(x,y);
     }*/
 
-   public void render(double timeFrame) {
+    public void render(double timeFrame) {
         for (int i = 0; i < oldState.size(); ++i) {
             Point oldPoint = oldState.get(i);
             Point newPoint = newState.get(i);
             newPoint.setFields(oldPoint);
             Vector acceleration = countAcceleration(newPoint, oldPoint, oldState);
-            System.out.println("i="+i+"  " +acceleration);
-
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-
-            }
-
+           // System.out.println("i=" + i + "  " + acceleration);
             // Vector acceleration = new Vector(0,0);
             Vector velocity = countVelocity(oldPoint, acceleration, timeFrame);
             Vector moving = countMoving(oldPoint, acceleration, timeFrame);
             setParam(newPoint, velocity, moving);
+            checkBorder(newPoint, oldPoint);
         }
         swapState();
+    }
+
+    private void checkBorder(Point newPoint, Point oldPoint) {
+        double i = (newPoint.getX() - circleCenter.getX());
+        double j = (newPoint.getY() - circleCenter.getY());
+        double r = circleRadius;
+        double r2 = r * r;
+        if (i * i + j * j >r2) {
+            double x1 = oldPoint.getX();
+            double y1 = oldPoint.getY();
+            double x2 = newPoint.getX();
+            double y2 = newPoint.getY();
+
+            double cx = circleCenter.getX();
+            double cy = circleCenter.getY();
+
+            double a = (y1-y2) / (x1-x2);
+            if (Double.isInfinite(a)){
+                System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");//todo
+            }
+            double b = (x1*y2 - x2*y1)
+                    / (x1-x2);
+
+
+            double a2 = a * a;
+
+            double b2 = b * b;
+            double d = Math.sqrt(a2 * r2 - a2 * cx * cx - 2 * a * b * cx +
+                    2 * a * cx * cy - b2 + 2 * b * cy + r2 - cy * cy);
+
+            double rx1 = (-d - a * b + a * cy + cx) / (a2 + 1);
+            double rx2 = (d - a * b + a * cy + cx) / (a2 + 1);
+
+            double ry1 = a * rx1 + b;
+            double ry2 = a * rx2 + b;
+
+            double distance1 = new Vector(rx1 - x2, ry1 - y2).countModule();
+            double distance2 = new Vector(rx2 - x2, ry2 - y2).countModule();
+
+            Vector rPoint;
+            if (distance1 < distance2) {
+                rPoint = new Vector(rx1, ry1);
+                System.out.println("X");
+            } else {
+                rPoint = new Vector(rx2, ry2);
+            }
+
+
+            System.out.println(rPoint);
+        }
     }
 
     private void setParam(Point newPoint, Vector velocity, Vector moving) {
@@ -84,7 +128,7 @@ public class Model {
 
     private Vector countAcceleration(Point newPoint, Point oldPoint, List<Point> oldState) {
         Vector fKulon = countForceKulon(newPoint, oldPoint, oldState);
-       //Vector fKulon = new Vector(0,0);
+        //Vector fKulon = new Vector(0,0);
         double aX = (-kFriction * oldPoint.getvX() + fKulon.getX()) / newPoint.getM();
         double aY = (-kFriction * oldPoint.getvY() + fKulon.getY()) / newPoint.getM();
         return new Vector(aX, aY);

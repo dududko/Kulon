@@ -9,18 +9,12 @@ import java.util.List;
 public class Model {
 
     public static final double K_KULON = 9 * Math.pow(10, 9);
-
     public static final double DEFAULT_K_FRICTION = Math.pow(10, -8);
-
     List<Point> oldState;
-
     List<Point> newState;
-
-    private double kFriction = DEFAULT_K_FRICTION;
-
     Vector circleCenter;
     double circleRadius;
-
+    private double kFriction = DEFAULT_K_FRICTION;
 
     public Model(List<Point> curState, Vector circleCenter, double circleRadius) {
         this.oldState = curState;
@@ -31,9 +25,6 @@ public class Model {
         this.circleCenter = circleCenter;
         this.circleRadius = circleRadius;
     }
-
-
-
 
     public void render(double timeFrame) {
         for (int i = 0; i < oldState.size(); ++i) {
@@ -97,32 +88,40 @@ public class Model {
             Vector rPoint;
             if (distance1 < distance2) {
                 rPoint = new Vector(rx1, ry1);
-                System.out.println("X");
             } else {
                 rPoint = new Vector(rx2, ry2);
             }
 
-            double vReflectedX = rPoint.getX() - newPoint.getvX() - cx;
-            double vReflectedY = rPoint.getY() - newPoint.getvY() - cy;
 
-            double vA = (cy - vReflectedY) / (cx - vReflectedX);
-            Vector reflectedPoint = getReflectedVelocity(new Vector(vReflectedX, vReflectedY),a);
+            double ra = (cy - rPoint.getY()) / (cx - rPoint.getX());
+            Vector reflectedVelocity = getReflectedVelocity(new Vector(newPoint.getvX(), newPoint.getvY()), ra);
 
-            double vx = reflectedPoint.getX() - rPoint.getX() - cx;
-            double vy = reflectedPoint.getY() - rPoint.getY() - cy;
-            Vector newVelocity = new Vector(vx, vy);
+            double vx = reflectedVelocity.getX();
+            double vy = reflectedVelocity.getY();
+            System.out.println(new Vector(newPoint.getvX(), newPoint.getvY()));
+            System.out.println("new: " + reflectedVelocity);
 
             newPoint.setvX(vx);
             newPoint.setvY(vy);
             newPoint.setX(rPoint.getX());
             newPoint.setY(rPoint.getY());
+
         }
     }
 
-     private Vector getReflectedVelocity(Vector velocity, double a) {
-        double x = 2*(a*velocity.getY()+velocity.getX())/(1+a*a) - velocity.getX();
-        double y = 2*a*x - velocity.getX();
-        return new Vector(x,y);
+    private Vector getReflectedVelocity(Vector velocity, double a) {
+        double c = velocity.getY() - a * velocity.getX();
+        double mX;
+        double mY;
+        if (Double.isInfinite(a)) {
+            mX = 0;
+            mY = - velocity.getX();
+        }  else {
+            mX = -a * c / (a * a + 1);
+            mY = c / (a * a + 1);
+        }
+
+        return new Vector(2*mX-velocity.getX(), 2*mY-velocity.getY());
     }
 
     private void setParam(Point newPoint, Vector velocity, Vector moving) {
@@ -145,7 +144,6 @@ public class Model {
         return new Vector(vX, vY);
     }
 
-
     private Vector countAcceleration(Point newPoint, Point oldPoint, List<Point> oldState) {
         Vector fKulon = countForceKulon(newPoint, oldPoint, oldState);
         //Vector fKulon = new Vector(0,0);
@@ -154,7 +152,6 @@ public class Model {
         return new Vector(aX, aY);
 
     }
-
 
     private Vector countForceKulon(Point newPoint, Point oldPoint, List<Point> oldState) {
         double fX = 0;
@@ -183,7 +180,6 @@ public class Model {
         double dy = newPoint.getY() - point.getY();
         return new Vector(dx, dy);
     }
-
 
     private void swapState() {
         List<Point> tmp = oldState;

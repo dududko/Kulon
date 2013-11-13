@@ -36,11 +36,11 @@ public class Kulon implements ApplicationListener {
         renderer = new ShapeRenderer();
 
         List<Point> points = new ArrayList<Point>();
-        points.add(new Point(10, 100,50, 500));
-       /* points.add(new Point(100, 100, 0.1, -0.1));
-        points.add(new Point(70, 70, 0, -0.1));
-        points.add(new Point(90, 70, 0, -0.1));
-        points.add(new Point(70, 90, 10, 0));*/
+        points.add(new Point(150, 100,0, 20));
+        points.add(new Point(100, 100, 50, -50));
+        points.add(new Point(70, 70, 0, -15));
+        points.add(new Point(90, 70, 0, -24));
+        points.add(new Point(70, 90, 100, 0));
 
         model = new Model(points,new Vector(100,100),100);
     }
@@ -48,7 +48,6 @@ public class Kulon implements ApplicationListener {
     @Override
     public void dispose() {
         batch.dispose();
-        texture.dispose();
     }
 
     @Override

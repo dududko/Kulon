@@ -10,7 +10,7 @@ public class Model {
 
     public static final double K_KULON = 9 * Math.pow(10, 9);
 
-    public static final double DEFAULT_K_FRICTION = 1.0;
+    public static final double DEFAULT_K_FRICTION = Math.pow(10, -8);
 
     List<Point> oldState;
 
@@ -33,12 +33,27 @@ public class Model {
     }
 
 
-    void render(double timeFrame) {
+    /*private Vector2 getReflectedVelocity(Vector2 velocity, float a) {
+        float x = 2*(a*velocity.y+velocity.x)/(1+a*a) - velocity.x;
+        float y = 2*a*x - velocity.y;
+        return new Vector2(x,y);
+    }*/
+
+   public void render(double timeFrame) {
         for (int i = 0; i < oldState.size(); ++i) {
             Point oldPoint = oldState.get(i);
             Point newPoint = newState.get(i);
             newPoint.setFields(oldPoint);
             Vector acceleration = countAcceleration(newPoint, oldPoint, oldState);
+            System.out.println("i="+i+"  " +acceleration);
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+
+            }
+
+            // Vector acceleration = new Vector(0,0);
             Vector velocity = countVelocity(oldPoint, acceleration, timeFrame);
             Vector moving = countMoving(oldPoint, acceleration, timeFrame);
             setParam(newPoint, velocity, moving);
@@ -50,13 +65,13 @@ public class Model {
         newPoint.setvX(velocity.getX());
         newPoint.setvY(velocity.getY());
 
-        newPoint.setvX(moving.getX());
-        newPoint.setvY(moving.getY());
+        newPoint.setX(moving.getX());
+        newPoint.setY(moving.getY());
     }
 
     private Vector countMoving(Point oldPoint, Vector acceleration, double timeFrame) {
-        double sX = oldPoint.getvX() + oldPoint.getvX() * timeFrame + (acceleration.getX() * timeFrame * timeFrame) / 2;
-        double sY = oldPoint.getvY() + oldPoint.getvY() * timeFrame + (acceleration.getY() * timeFrame * timeFrame) / 2;
+        double sX = oldPoint.getX() + oldPoint.getvX() * timeFrame + (acceleration.getX() * timeFrame * timeFrame) / 2;
+        double sY = oldPoint.getY() + oldPoint.getvY() * timeFrame + (acceleration.getY() * timeFrame * timeFrame) / 2;
         return new Vector(sX, sY);
     }
 
@@ -69,8 +84,9 @@ public class Model {
 
     private Vector countAcceleration(Point newPoint, Point oldPoint, List<Point> oldState) {
         Vector fKulon = countForceKulon(newPoint, oldPoint, oldState);
-        double aX = (-kFriction * oldPoint.getX() + fKulon.getX()) / newPoint.getM();
-        double aY = (-kFriction * oldPoint.getY() + fKulon.getY()) / newPoint.getM();
+       //Vector fKulon = new Vector(0,0);
+        double aX = (-kFriction * oldPoint.getvX() + fKulon.getX()) / newPoint.getM();
+        double aY = (-kFriction * oldPoint.getvY() + fKulon.getY()) / newPoint.getM();
         return new Vector(aX, aY);
 
     }

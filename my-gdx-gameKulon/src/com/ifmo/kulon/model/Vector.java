@@ -27,5 +27,11 @@ public class Vector {
         return Math.sqrt(x*x + y*y);
     }
 
-
+    @Override
+    public String toString() {
+        return "Vector{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }

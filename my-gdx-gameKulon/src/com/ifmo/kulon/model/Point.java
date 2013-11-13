@@ -5,8 +5,8 @@ package com.ifmo.kulon.model;
  */
 public class Point {
 
-    public static final double DEFAULT_M = 1;
-    public static final double DEFAULT_Q = 1;
+    public static final double DEFAULT_M = Math.pow(10, -7);
+    public static final double DEFAULT_Q = Math.pow(10, -7);
 
     private double x;
     private double y;

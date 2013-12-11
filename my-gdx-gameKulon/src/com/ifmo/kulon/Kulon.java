@@ -16,33 +16,52 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Kulon implements ApplicationListener {
+    public static float width;
+    public static float height;
     private OrthographicCamera camera;
     private SpriteBatch batch;
     private Texture texture;
     private Sprite sprite;
     private ShapeRenderer renderer;
-
     private Model model;
 
     @Override
     public void create() {
-        float w = Gdx.graphics.getWidth();
-        float h = Gdx.graphics.getHeight();
+        width = Gdx.graphics.getWidth();
+        height = Gdx.graphics.getHeight();
 
-        camera = new OrthographicCamera(1, h / w);
+        camera = new OrthographicCamera(1, height / width);
 
         batch = new SpriteBatch();
 
         renderer = new ShapeRenderer();
 
         List<Point> points = new ArrayList<Point>();
-        points.add(new Point(150, 100,0, 20));
+        /*points.add(new Point(150, 100,0, 20));
         points.add(new Point(100, 100, 50, -50));
         points.add(new Point(70, 70, 0, -15));
         points.add(new Point(90, 70, 0, -24));
         points.add(new Point(70, 90, 100, 0));
+        points.add(new Point(20, 90, 100, -50));
+        points.add(new Point(100, 180, -100, -10));
 
-        model = new Model(points,new Vector(100,100),100);
+        model = new Model(points,new Vector(100,100),100);*/
+        /*for (int i = 0; i < 100; i++) {
+            double r = 100 * Math.random();
+            double angle = 2 * Math.PI * Math.random();
+            double x = r*Math.cos(angle);
+            double y = r*Math.sin(angle);
+            points.add(new Point(x,y, 0, 20));
+        }*/
+        points.add(new Point(0, 100, 0, -45));
+        points.add(new Point(0, -100, 0, 45));
+        /*points.add(new Point(-30, -30, 0, -15));
+        points.add(new Point(-10, -30, 0, -24));
+        points.add(new Point(-30, -10, 100, 0));
+        points.add(new Point(-80, -10, 100, -50));
+        points.add(new Point(0, 80, -100, -10));*/
+
+        model = new Model(points, new Vector(0, 0), 100);
     }
 
     @Override
@@ -62,10 +81,10 @@ public class Kulon implements ApplicationListener {
 
         renderer.begin(ShapeRenderer.ShapeType.Line);
         renderer.setColor(0, 0, 0, 0);
-        renderer.circle(100, 100, 100);
+        renderer.circle(width / 2, height / 2, 100);
         renderer.setColor(255, 0, 0, 0);
         for (Point point : model.getOldState()) {
-            renderer.circle((float) point.getX(), (float) point.getY(), 5);
+            renderer.circle((float) point.getX() + width / 2, (float) point.getY() + height / 2, 5);
             //System.out.println(point.getX() + "  " + point.getY());
         }
 

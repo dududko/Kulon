@@ -9,7 +9,7 @@ import java.util.List;
 public class Model {
 
     public static final double K_KULON = 9 * Math.pow(10, 9);
-    public static final double DEFAULT_K_FRICTION = Math.pow(10, -8);
+    public static final double DEFAULT_K_FRICTION = Math.pow(10, -7.9);
     List<Point> oldState;
     List<Point> newState;
     Vector circleCenter;
@@ -32,8 +32,6 @@ public class Model {
             Point newPoint = newState.get(i);
             newPoint.setFields(oldPoint);
             Vector acceleration = countAcceleration(newPoint, oldPoint, oldState);
-            // System.out.println("i=" + i + "  " + acceleration);
-            // Vector acceleration = new Vector(0,0);
             Vector velocity = countVelocity(oldPoint, acceleration, timeFrame);
             Vector moving = countMoving(oldPoint, acceleration, timeFrame);
             setParam(newPoint, velocity, moving);
@@ -47,7 +45,7 @@ public class Model {
         double j = (newPoint.getY() - circleCenter.getY());
         double r = circleRadius;
         double r2 = r * r;
-        if (i * i + j * j > r2) {
+        if (i * i + j * j >= r2) {
             double x1 = oldPoint.getX();
             double y1 = oldPoint.getY();
             double x2 = newPoint.getX();
@@ -67,9 +65,13 @@ public class Model {
             double b2 = b * b;
             double d = Math.sqrt(a2 * r2 - a2 * cx * cx - 2 * a * b * cx +
                     2 * a * cx * cy - b2 + 2 * b * cy + r2 - cy * cy);
+            if (Double.isNaN(d)) {
+                d = 0;
+            }
 
             double rx1 = (-d - a * b + a * cy + cx) / (a2 + 1);
             double rx2 = (d - a * b + a * cy + cx) / (a2 + 1);
+
 
             double ry1 = a * rx1 + b;
             double ry2 = a * rx2 + b;
@@ -98,14 +100,11 @@ public class Model {
 
             double vx = reflectedVelocity.getX();
             double vy = reflectedVelocity.getY();
-            System.out.println(new Vector(newPoint.getvX(), newPoint.getvY()));
-            System.out.println("new: " + reflectedVelocity);
 
             newPoint.setvX(vx);
             newPoint.setvY(vy);
             newPoint.setX(rPoint.getX());
             newPoint.setY(rPoint.getY());
-
         }
     }
 
@@ -115,13 +114,13 @@ public class Model {
         double mY;
         if (Double.isInfinite(a)) {
             mX = 0;
-            mY = - velocity.getX();
-        }  else {
+            mY = -velocity.getX();
+        } else {
             mX = -a * c / (a * a + 1);
             mY = c / (a * a + 1);
         }
 
-        return new Vector(2*mX-velocity.getX(), 2*mY-velocity.getY());
+        return new Vector(2 * mX - velocity.getX(), 2 * mY - velocity.getY());
     }
 
     private void setParam(Point newPoint, Vector velocity, Vector moving) {
@@ -164,9 +163,12 @@ public class Model {
 
             Vector distance = countDistance(newPoint, point);
             double moduleDistance = distance.countModule();
-            double tmp = point.getQ() / (moduleDistance * moduleDistance);
-            fX += tmp * distance.getX() / moduleDistance;
-            fY += tmp * distance.getY() / moduleDistance;
+            double tmp;
+            if (moduleDistance != 0) {
+                tmp = point.getQ() / (moduleDistance * moduleDistance);
+                fX += tmp * distance.getX() / moduleDistance;
+                fY += tmp * distance.getY() / moduleDistance;
+            }
         }
 
         fX *= K_KULON * newPoint.getQ();

@@ -53,8 +53,8 @@ public class Kulon implements ApplicationListener {
             double y = r*Math.sin(angle);
             points.add(new Point(x,y, 0, 20));
         }*/
-        points.add(new Point(0, 100, 0, -45));
-        points.add(new Point(0, -100, 0, 45));
+        points.add(new Point(0, 100, 0, -30));
+        points.add(new Point(0, -100, 0, 30));
         /*points.add(new Point(-30, -30, 0, -15));
         points.add(new Point(-10, -30, 0, -24));
         points.add(new Point(-30, -10, 100, 0));

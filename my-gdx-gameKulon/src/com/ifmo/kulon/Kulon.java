@@ -14,6 +14,7 @@ import com.ifmo.kulon.model.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Kulon implements ApplicationListener {
     public static float width;
@@ -24,6 +25,11 @@ public class Kulon implements ApplicationListener {
     private Sprite sprite;
     private ShapeRenderer renderer;
     private Model model;
+    private static final  int PH_RADIUS = 100;
+    private static final  float POINT_RADIUS = 7;
+
+
+
 
     @Override
     public void create() {
@@ -53,15 +59,24 @@ public class Kulon implements ApplicationListener {
             double y = r*Math.sin(angle);
             points.add(new Point(x,y, 0, 20));
         }*/
-        points.add(new Point(0, 100, 0, -30));
-        points.add(new Point(0, -100, 0, 30));
+        points.add(new Point(0, 100, 0, -10));
+        points.add(new Point(0, -100, 0, 10));
         /*points.add(new Point(-30, -30, 0, -15));
         points.add(new Point(-10, -30, 0, -24));
         points.add(new Point(-30, -10, 100, 0));
         points.add(new Point(-80, -10, 100, -50));
         points.add(new Point(0, 80, -100, -10));*/
 
-        model = new Model(points, new Vector(0, 0), 100);
+
+        Random random = new Random();
+        for (int i = 0; i<30;++i){
+            int x = random.nextInt(PH_RADIUS);
+            int y = random.nextInt(PH_RADIUS);
+            points.add(new Point(x,y,0,0));
+
+        }
+
+        model = new Model(points, new Vector(0, 0), PH_RADIUS);
     }
 
     @Override
@@ -81,10 +96,10 @@ public class Kulon implements ApplicationListener {
 
         renderer.begin(ShapeRenderer.ShapeType.Line);
         renderer.setColor(0, 0, 0, 0);
-        renderer.circle(width / 2, height / 2, 100);
+        renderer.circle(width / 2, height / 2, PH_RADIUS + POINT_RADIUS);
         renderer.setColor(255, 0, 0, 0);
         for (Point point : model.getOldState()) {
-            renderer.circle((float) point.getX() + width / 2, (float) point.getY() + height / 2, 5);
+            renderer.circle((float) point.getX() + width / 2, (float) point.getY() + height / 2, POINT_RADIUS);
             //System.out.println(point.getX() + "  " + point.getY());
         }
 
